@@ -1,29 +1,17 @@
-import itertools
+import spacy
+from spacy.tokens.token import Token
+import ipdb
 import random
 from typing import List
 
-from interfaces.SentenceOperation import SentenceOperation
-from tasks.TaskTypes import TaskType
-
-import spacy
-from spacy.tokens.token import Token
-
-"""
-Convert a sentence to its gapped version
-"""
-import ipdb
-
-
-class SentenceToGapped(SentenceOperation):
+class SentenceToGapped():
     """
     Some code adapted from the Python Natural Language Processing Cookbook, https://shrtm.nu/suAC
     """
-    tasks = [TaskType.TEXT_CLASSIFICATION, TaskType.TEXT_TO_TEXT_GENERATION, TaskType.TEXT_TAGGING]
     languages = ["en"]
 
     def __init__(self, seed: int = 0) -> None:
         max_outputs=1
-        super().__init__(seed=seed, max_outputs=max_outputs)
         self.nlp = spacy.load('en_core_web_sm')
         self.conj_pos = "CCONJ"
         self.verb_pos = "VERB"
@@ -73,14 +61,12 @@ class SentenceToGapped(SentenceOperation):
         for other_verb in all_verbs:
             token_spans.append(self.get_clause_token_span_for_verb(other_verb, doc, all_verbs))
 
-        ipdb.set_trace()
         sentence_clauses = []
         for token_span in token_spans:
             start, end = token_span
             if (start < end):
                 clause = doc[start:end]
                 sentence_clauses.append(clause)
-        ipdb.set_trace()
         clauses_texts = [clause.text for clause in sentence_clauses]
 
         gapped_sentence = ""
@@ -105,7 +91,6 @@ class SentenceToGapped(SentenceOperation):
         return gapped_sentence
 
     def generate(self, sentence: str) -> List[str]:
-        random.seed(self.seed)
 
 
         return gapped_sentence
@@ -113,5 +98,5 @@ class SentenceToGapped(SentenceOperation):
 if __name__ == '__main__':
     s = SentenceToGapped()
     sentence = "Paul likes coffee and Mary likes tea."
-    SentenceToGapped.get_clauses(sentence)
-    SentenceToGapped.generate(sentence)
+    s.get_clauses(sentence=sentence)
+    #s.generate(sentence=sentence)
